@@ -9,6 +9,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+namespace MatchGame
+{
+    using System.Windows.Threading;
+}
+
 namespace ProjectWPFNET
 {
     /// <summary>
@@ -20,12 +25,35 @@ namespace ProjectWPFNET
         {
             InitializeComponent();
             SetUpGame();
+        }
 
+        TextBlock lastTextBlockClicked;
+        bool findingMatch = false;
+
+        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock textBlock = sender as TextBlock;
+            if (findingMatch == false )
+            {
+                textBlock.Visibility = Visibility.Hidden;
+                lastTextBlockClicked = textBlock;
+                findingMatch = true;
+            }
+            else if (textBlock.Text == lastTextBlockClicked.Text)
+            {
+                textBlock.Visibility = Visibility.Hidden;
+                findingMatch = false;
+            }
+            else
+            {
+                lastTextBlockClicked.Visibility = Visibility.Visible;
+                findingMatch = false;
+            }
         }
 
         private void SetUpGame()
         {
-            List<string> animalEmoji = new List<string>()
+            List<string> reactionEmoji = new List<string>()
             {
                 "😊", "😊",
                 "😀", "😀",
@@ -39,9 +67,11 @@ namespace ProjectWPFNET
 
             Random random = new Random();
 
-            foreach (TextBlock texBlock in mainGrid.Children.OfType<TextBlock>())
+            foreach (TextBlock textBlock in mainGrid.Children.OfType<TextBlock>())
             {
-
+                int index = random.Next(reactionEmoji.Count);
+                string nextEmoji = reactionEmoji[index];
+                textBlock.Text = nextEmoji;
             }
         }
     }
